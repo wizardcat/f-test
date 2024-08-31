@@ -1,10 +1,12 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Dialect } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
+import { User } from 'src/users/user.model';
+import { constants } from '../common/constants';
 
 export const databaseProviders = [
   {
-    provide: 'SEQUELIZE',
+    provide: constants.DB_PROVIDER,
     imports: [ConfigModule],
     useFactory: async (configService: ConfigService) => {
       const sequelize = new Sequelize({
@@ -15,6 +17,7 @@ export const databaseProviders = [
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
       });
+      sequelize.addModels([User]);
       await sequelize.sync();
       return sequelize;
     },
