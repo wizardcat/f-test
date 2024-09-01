@@ -18,7 +18,7 @@ export const databaseProviders = [
         database: configService.get<string>('database.database'),
       });
       sequelize.addModels([User]);
-      await sequelize.sync();
+      await sequelize.sync({ alter: true });
       return sequelize;
     },
     inject: [ConfigService],
