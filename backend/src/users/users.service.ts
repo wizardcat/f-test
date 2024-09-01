@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { hash } from 'argon2';
 import { constants } from 'src/common/constants';
+import { UserDto } from './dto/user.dto';
 import { User } from './user.model';
 
 const { USERS_PROVIDER } = constants.moduleProviders;
@@ -10,12 +12,29 @@ export class UsersService {
     private readonly usersRepository: typeof User,
   ) {}
 
-  async addUser(name: string, email: string, phone: string): Promise<User> {
-    const user = await this.usersRepository.create({ name, email, phone });
+  async addUser(userDto: UserDto): Promise<User> {
+    const hashedPassword = await hash(userDto.password);
+    console.log('create:', {
+      ...userDto,
+      password: hashedPassword,
+    });
+
+    const user = await this.usersRepository.create({
+      ...userDto,
+      password: hashedPassword,
+    });
     return user;
   }
 
   async getUserById(id: number): Promise<User> {
     return await this.usersRepository.findByPk(id);
+  }
+
+  async getUser(email: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({
+      where: {
+        email,
+      },
+    });
   }
 }

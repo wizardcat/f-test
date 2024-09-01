@@ -27,4 +27,10 @@ export class User extends Model<User> {
     allowNull: false,
   })
   phone: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  password: string;
 }
