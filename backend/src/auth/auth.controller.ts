@@ -17,18 +17,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(200)
-  @Post('sign-up')
-  // @UsePipes(new ValidationPipe())
-  async register(@Body() dto: AuthDto) {
-    return this.authService.signUp(dto);
+  @Post('register')
+  async register(@Body() authDto: AuthDto) {
+    return this.authService.register(authDto);
   }
 
   @HttpCode(200)
-  @Post('sign-in')
-  // @UsePipes(new ValidationPipe())
+  @Post('login')
   async login(@Body() authDto: AuthDto, @Res() res: Response) {
-    const { accessToken, refreshToken, user } =
-      await this.authService.signIn(authDto);
+    const credentials = await this.authService.login(authDto);
+    const { accessToken, refreshToken, user } = credentials;
+
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: true,
@@ -41,10 +40,9 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Post('sign-in/access-token')
-  // @UsePipes(new ValidationPipe())
-  async getNewToken(@Body() dto: RefreshTokenDto) {
-    return this.authService.getNewToken(dto.refreshToken);
+  @Post('login/access-token')
+  async getNewToken(@Body() rtDto: RefreshTokenDto) {
+    return this.authService.getNewToken(rtDto.refreshToken);
   }
 
   @Post('refresh-token')

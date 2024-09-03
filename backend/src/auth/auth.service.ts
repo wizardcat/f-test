@@ -16,13 +16,21 @@ export class AuthService {
     private readonly user: UsersService,
   ) {}
 
-  async signUp(authDto: AuthDto) {
+  async register(authDto: AuthDto) {
     const { email } = authDto;
+
+    if (!email) throw new BadRequestException('Email is required');
+
     const user = await this.user.getUserByEmail(email);
 
     if (user) throw new BadRequestException('User alrady exists');
 
     const newUser = await this.user.addUser(authDto);
+
+    if (!newUser) throw new BadRequestException('User not created');
+
+    console.log('A new user has been created: ', newUser);
+
     const tokens = await this.issueTokens(newUser.id);
 
     return {
@@ -31,14 +39,15 @@ export class AuthService {
     };
   }
 
-  async signIn(dto: AuthDto) {
+  async login(dto: AuthDto) {
     const user = await this.validateUser(dto);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
     const tokens = await this.issueTokens(user.id);
+    delete user.dataValues.password;
+    console.log('Logged in user: ', user);
 
     return {
       user,
@@ -53,6 +62,8 @@ export class AuthService {
 
     const user = await this.user.getUserById(result.id);
 
+    if (!user) throw new NotFoundException('User not found');
+
     const tokens = await this.issueTokens(user.id);
 
     return {
@@ -62,7 +73,8 @@ export class AuthService {
   }
   async refresh(refreshToken: string): Promise<string> {
     try {
-      const payload = this.jwt.verify(refreshToken);
+      const payload = await this.jwt.verifyAsync(refreshToken);
+
       const newAccessToken = this.jwt.sign(
         { sub: payload.sub, email: payload.email },
         { expiresIn: '15m' },
@@ -74,14 +86,14 @@ export class AuthService {
   }
 
   private async issueTokens(userId: number) {
-    const data = { id: userId };
+    const payload = { id: userId };
 
-    const accessToken = this.jwt.sign(data, {
+    const accessToken = this.jwt.sign(payload, {
       // expiresIn: 5,
       expiresIn: '15m',
     });
 
-    const refreshToken = this.jwt.sign(data, {
+    const refreshToken = this.jwt.sign(payload, {
       expiresIn: '7d',
     });
 

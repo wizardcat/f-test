@@ -15,9 +15,5 @@ export class UserDto implements Partial<User> {
 
   @IsString()
   @IsOptional()
-  avatarPath?: string;
-
-  @IsString()
-  @IsOptional()
   phone?: string;
 }
