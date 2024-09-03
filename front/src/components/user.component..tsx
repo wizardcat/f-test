@@ -1,26 +1,38 @@
 import { useAuth } from '@app/providers/auth.provider';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const User = () => {
-  const auth = useAuth();
+  const { user: userData, accessToken, refreshAccessToken, logout } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log({ userData, accessToken });
+    if (!userData) {
+      navigate('/login');
+    } else if (!accessToken) {
+      refreshAccessToken();
+    }
+  }, [userData, accessToken, refreshAccessToken, navigate]);
+
+  // if (!userData) return <div>Loading...</div>;
+
   const handleLogout = () => {
-    auth.logout();
+    logout();
     navigate('/login');
   };
 
-  if (!auth.userData) {
+  if (!userData) {
     return <p>User is not logged in</p>;
   }
 
   return (
     <div>
       <h2>User Information</h2>
-      <p>ID: {auth.userData.user.id}</p>
-      <p>Email: {auth.userData.user.email}</p>
-      <p>Name: {auth.userData.user.name}</p>
-      <p>Phone: {auth.userData.user.phone}</p>
+      <p>ID: {userData.id}</p>
+      <p>Email: {userData.email}</p>
+      <p>Name: {userData.name}</p>
+      <p>Phone: {userData.phone}</p>
       <button onClick={handleLogout}>Logout</button>
     </div>
   );
