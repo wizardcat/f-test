@@ -13,6 +13,7 @@ interface AuthContextType {
   user: User | null;
   accessToken: string | null;
   login: (email: string, password: string) => Promise<void>;
+  registerUser: (user: User) => Promise<void>;
   logout: () => void;
   refreshAccessToken: () => Promise<void>;
 }
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const { data } = await axios.post(`${baseApiUri}/api/v1/auth/sign-in`, {
+      const { data } = await axios.post(`${baseApiUri}/api/v1/auth/login`, {
         email,
         password,
       });
@@ -56,6 +57,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser({ ...data.user, token: data.accessToken });
     } catch (error) {
       console.error('Login error:', error);
+    }
+  };
+
+  const registerUser = async (user: User) => {
+    try {
+      const { data } = await axios.post(
+        `${baseApiUri}/api/v1/auth/register`,
+        user,
+      );
+      setAccessToken(data.accessToken);
+      setUser({ ...data.user, token: data.accessToken });
+    } catch (error) {
+      console.error('Register error:', error);
     }
   };
 
@@ -77,7 +91,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, accessToken, login, logout, refreshAccessToken }}
+      value={{
+        user,
+        accessToken,
+        registerUser,
+        login,
+        logout,
+        refreshAccessToken,
+      }}
     >
       {children}
     </AuthContext.Provider>
