@@ -18,7 +18,7 @@ export class AuthService {
 
   async signUp(authDto: AuthDto) {
     const { email } = authDto;
-    const user = await this.user.getUser(email);
+    const user = await this.user.getUserByEmail(email);
 
     if (user) throw new BadRequestException('User alrady exists');
 
@@ -33,6 +33,11 @@ export class AuthService {
 
   async signIn(dto: AuthDto) {
     const user = await this.validateUser(dto);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const tokens = await this.issueTokens(user.id);
 
     return {
@@ -55,12 +60,25 @@ export class AuthService {
       ...tokens,
     };
   }
+  async refresh(refreshToken: string): Promise<string> {
+    try {
+      const payload = this.jwt.verify(refreshToken);
+      const newAccessToken = this.jwt.sign(
+        { sub: payload.sub, email: payload.email },
+        { expiresIn: '15m' },
+      );
+      return newAccessToken;
+    } catch (e) {
+      throw new UnauthorizedException(`Invalid refresh token: ${e.message}`);
+    }
+  }
 
   private async issueTokens(userId: number) {
     const data = { id: userId };
 
     const accessToken = this.jwt.sign(data, {
-      expiresIn: '1h',
+      // expiresIn: 5,
+      expiresIn: '15m',
     });
 
     const refreshToken = this.jwt.sign(data, {
@@ -72,7 +90,7 @@ export class AuthService {
 
   private async validateUser(authDto: AuthDto) {
     const { email, password } = authDto;
-    const user = await this.user.getUser(email);
+    const user = await this.user.getUserByEmail(email);
 
     if (!user) throw new NotFoundException('User not found');
 
