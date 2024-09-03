@@ -30,7 +30,7 @@ export class UsersService {
     return await this.usersRepository.findByPk(id);
   }
 
-  async getUser(email: string): Promise<User | undefined> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({
       where: {
         email,
