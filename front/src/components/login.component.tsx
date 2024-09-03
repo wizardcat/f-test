@@ -3,20 +3,20 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const auth = useAuth();
+  const [email, setEmail] = useState('test@test.ttt');
+  const [password, setPassword] = useState('12345678');
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    await auth.login({ email, password });
+    await login(email, password);
   };
 
   useEffect(() => {
-    if (auth.userData) {
+    if (user) {
       navigate('/user');
     }
-  }, [navigate, auth]);
+  }, [navigate, user]);
 
   return (
     <div>
