@@ -83,7 +83,7 @@ export const Register = () => {
       </form>
       <div className="mt-4 text-center">
         <p className="text-sm">
-          Back to login page{' '}
+          Back to the login page{' '}
           <Link to="/login" className="text-indigo-600 hover:text-indigo-800">
             here
           </Link>
