@@ -1,49 +1,56 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { hash } from 'argon2';
-import { constants } from 'src/common/constants';
-import { UserDto } from './dto/user.dto';
-import { User } from './user.model';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { FindOptions } from 'sequelize';
+import { CryptoService } from 'src/crypto/crypto.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './models/user.model';
 
-const { USERS_PROVIDER } = constants.moduleProviders;
+// const { USERS_PROVIDER } = constants.moduleProviders;
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject(USERS_PROVIDER)
-    private readonly usersRepository: typeof User,
+    // @Inject(USERS_PROVIDER)
+    @InjectModel(User)
+    private readonly usersModel: typeof User,
+    private cryptoService: CryptoService,
   ) {}
 
-  async addUser(userDto: UserDto): Promise<User> {
-    const hashedPassword = await hash(userDto.password);
+  async addUser({ password, ...rest }: CreateUserDto) {
+    const hashedPassword = await this.cryptoService.generateHash(password);
 
-    const user = await this.usersRepository.create({
-      ...userDto,
-      password: hashedPassword,
+    return await this.usersModel
+      .create({
+        ...rest,
+        password: hashedPassword,
+      })
+      .catch((err) => {
+        console.log('user creation error: ', err);
+        throw err;
+      });
+  }
+
+  async getUserById(
+    id: number,
+    options?: FindOptions<User>,
+  ): Promise<User | null> {
+    const user = await this.usersModel.findOne({
+      ...options,
+      where: {
+        ...options?.where,
+        id,
+      },
+      raw: true,
     });
 
-    if (!user) throw new BadRequestException('User not created');
-
-    delete user?.dataValues.password;
     return user;
   }
 
-  async getUserById(id: number): Promise<User> {
-    if (!id) throw new BadRequestException('ID is required');
-
-    const user = await this.usersRepository.findByPk(id);
-
-    if (!user) throw new BadRequestException('User not found');
-
-    delete user?.dataValues.password;
-    return user;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    if (!email) throw new BadRequestException('Email is required');
-
-    const user = await this.usersRepository.findOne({
+  async getUserByEmail(email: string): Promise<User | null> {
+    const user = await this.usersModel.findOne({
       where: {
         email,
       },
+      raw: true,
     });
 
     return user;

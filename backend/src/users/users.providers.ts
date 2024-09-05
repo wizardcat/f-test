@@ -1,5 +1,5 @@
 import { constants } from 'src/common/constants';
-import { User } from './user.model';
+import { User } from './models/user.model';
 
 const { USERS_PROVIDER } = constants.moduleProviders;
 

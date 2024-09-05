@@ -1,15 +1,30 @@
-import { Controller, Get } from '@nestjs/common';
-import { Auth } from 'src/decorators/auth.decorator';
-import { CurrentUser } from 'src/decorators/user.decorator';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
+@ApiTags('User')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('profile')
-  @Auth()
-  async getUserProfile(@CurrentUser('id') id: number) {
-    return await this.usersService.getUserById(id);
+  @Post('add-user')
+  addUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.addUser(createUserDto);
+  }
+
+  @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
+  getUserById(@Param('id') id: string) {
+    return this.usersService.getUserById(+id);
   }
 }
