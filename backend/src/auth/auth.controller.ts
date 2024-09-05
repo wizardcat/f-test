@@ -1,58 +1,94 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
-  HttpCode,
+  Get,
+  InternalServerErrorException,
   Post,
   Req,
   Res,
-  UnauthorizedException,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UserLoginDto } from 'src/users/dto/user-login.dto';
+import { UsersService } from 'src/users/users.service';
+import {
+  cookieConfig,
+  extractRefreshTokenFromCookies,
+} from 'src/utils/cookies';
+import { AuthRefreshTokenService } from './auth-refresh-token.service';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/auth.dto';
-import { RefreshTokenDto } from './dto/refreshToken.dto';
+import { Public } from './decorators/public.decorator';
+import { User } from './decorators/user.decorator';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private usersService: UsersService,
+    private readonly authService: AuthService,
+    private authRefreshTokenService: AuthRefreshTokenService,
+  ) {}
 
-  @HttpCode(200)
+  @Public()
+  @ApiBody({ type: CreateUserDto })
   @Post('register')
-  async register(@Body() authDto: AuthDto) {
-    return this.authService.register(authDto);
+  async register(
+    @Body() createUserDto: CreateUserDto,
+    // @Res({ passthrough: true }) res: Response,
+  ) {
+    const newUser = await this.usersService.addUser(createUserDto);
+
+    return newUser;
   }
 
-  @HttpCode(200)
+  @ApiBody({ type: UserLoginDto })
+  @Public()
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() authDto: AuthDto, @Res() res: Response) {
-    const credentials = await this.authService.login(authDto);
-    const { accessToken, refreshToken, user } = credentials;
-
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      // sameSite: 'strict',
-      sameSite: 'none',
-    });
-    res.cookie('test_cookie', 'test');
-
-    return res.json({ user, accessToken });
+  login(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.authService.login(res, req.user);
   }
 
-  @HttpCode(200)
-  @Post('login/access-token')
-  async getNewToken(@Body() rtDto: RefreshTokenDto) {
-    return this.authService.getNewToken(rtDto.refreshToken);
+  @ApiBearerAuth()
+  @Get('profile')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async profile(
+    @User() authUser: Express.User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    res.header('Cache-Control', 'no-store');
+    return this.usersService.getUserById(authUser.id);
   }
 
-  @Post('refresh-token')
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies['refresh_token'];
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
+  @ApiBearerAuth()
+  @Public()
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh-tokens')
+  refreshTokens(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (!req.user) {
+      throw new InternalServerErrorException();
     }
 
-    const newAccessToken = await this.authService.refresh(refreshToken);
-    return res.json({ accessToken: newAccessToken });
+    return this.authRefreshTokenService.generateTokenPair(
+      (req.user as any).attributes,
+      res,
+      extractRefreshTokenFromCookies(req) as string,
+      (req.user as any).refreshTokenExpiresAt,
+    );
+  }
+
+  @Public()
+  @Post('clear-auth-cookie')
+  clearAuthCookie(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie(cookieConfig.refreshToken.name);
   }
 }
