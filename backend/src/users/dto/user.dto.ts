@@ -1,5 +1,5 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
-import { User } from '../user.model';
+import { User } from '../models/user.model';
 
 export class UserDto implements Partial<User> {
   @IsEmail()
