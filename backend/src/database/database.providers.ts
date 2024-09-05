@@ -2,7 +2,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createConnection } from 'mysql2/promise';
 import { Dialect } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { User } from 'src/users/user.model';
+import { AuthRefreshToken } from 'src/auth/models/auth-refresh-token.model';
+import { User } from 'src/users/models/user.model';
 import { constants } from '../common/constants';
 
 export const databaseProviders = [
@@ -45,8 +46,8 @@ export const databaseProviders = [
         database,
       });
 
-      sequelize.addModels([User]);
-      await sequelize.sync({ alter: true });
+      sequelize.addModels([User, AuthRefreshToken]);
+      // await sequelize.sync({ alter: true, force: false });
       return sequelize;
     },
     inject: [ConfigService],
