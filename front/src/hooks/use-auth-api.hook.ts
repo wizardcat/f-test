@@ -17,7 +17,6 @@ export const useAuthApi = () => {
       user,
       { withCredentials: true },
     );
-
     accessTokenStore.setAccessToken(data.access_token);
 
     return data;
@@ -32,7 +31,6 @@ export const useAuthApi = () => {
       },
       { withCredentials: true },
     );
-
     accessTokenStore.setAccessToken(data.access_token);
 
     return data;
@@ -45,9 +43,6 @@ export const useAuthApi = () => {
         withCredentials: true,
       },
     );
-
-    accessTokenStore.setAccessToken(data.access_token);
-
     return data;
   };
 
@@ -89,7 +84,9 @@ export const useAuthApi = () => {
     authFalseCallback: () => void,
   ): Promise<User | undefined> => {
     const authToken = accessTokenStore.getAccessToken();
-    console.log('getUserProfile:authToken: ', authToken);
+    if (!authToken) {
+      throw new Error('No authorization token found');
+    }
 
     try {
       const { data } = await axios.get(`${baseApiUri}/api/v1/auth/profile`, {
@@ -117,6 +114,9 @@ export const useAuthApi = () => {
     authFalseCallback: () => void,
   ): Promise<User | undefined> => {
     const authToken = accessTokenStore.getAccessToken();
+    if (!authToken) {
+      throw new Error('No authorization token found');
+    }
     try {
       const { data } = await axios.get(`${baseApiUri}/api/v1/users/${id}`, {
         withCredentials: true,
