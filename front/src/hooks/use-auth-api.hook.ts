@@ -94,7 +94,6 @@ export const useAuthApi = () => {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
-      console.log('getUserProfile:data: ', data);
       return data;
     } catch (e: any) {
       if (e?.status === 401) {
