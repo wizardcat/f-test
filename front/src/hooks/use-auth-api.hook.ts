@@ -15,7 +15,10 @@ export const useAuthApi = () => {
     const { data } = await axios.post(
       `${baseApiUri}/api/v1/auth/register`,
       user,
+      { withCredentials: true },
     );
+
+    accessTokenStore.setAccessToken(data.access_token);
 
     return data;
   };

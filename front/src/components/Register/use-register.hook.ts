@@ -1,7 +1,9 @@
-import { useAuth } from '@app/providers/auth.provider';
+import { useAuthContext } from '@app/hooks/use-auth-context.hook';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { Bounce, toast } from 'react-toastify';
 import { z } from 'zod';
 
 const UserSchema = z.object({
@@ -14,7 +16,7 @@ const UserSchema = z.object({
 type UserSchemaType = z.infer<typeof UserSchema>;
 
 export const useRegister = () => {
-  const { registerUser } = useAuth();
+  const { isAuthenticated, registerUser } = useAuthContext();
   const navigate = useNavigate();
 
   const {
@@ -26,13 +28,24 @@ export const useRegister = () => {
   });
 
   const onSubmit = async (data: UserSchemaType) => {
-    try {
-      await registerUser(data);
-      navigate('/user');
-    } catch (error) {
-      console.error('Registration failed', error);
-    }
+    registerUser(data);
   };
+
+  useEffect(() => {
+    if (isAuthenticated) navigate('/user');
+
+    toast.error('Register failed!', {
+      position: 'bottom-center',
+      autoClose: 1000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+      transition: Bounce,
+    });
+  }, [isAuthenticated, navigate]);
 
   return {
     register,
