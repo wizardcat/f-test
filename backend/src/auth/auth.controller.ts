@@ -40,11 +40,10 @@ export class AuthController {
   @Post('register')
   async register(
     @Body() createUserDto: CreateUserDto,
-    // @Res({ passthrough: true }) res: Response,
+    // @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const newUser = await this.usersService.addUser(createUserDto);
-
-    return newUser;
+    return this.authService.register(res, createUserDto);
   }
 
   @ApiBody({ type: UserLoginDto })

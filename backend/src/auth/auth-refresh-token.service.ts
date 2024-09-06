@@ -80,8 +80,7 @@ export class AuthRefreshTokenService {
     );
 
     return {
-      access_token: this.jwtService.sign(payload), // jwt module is configured in auth.module.ts for access token
+      access_token: this.jwtService.sign(payload),
     };
   }
-
 }
