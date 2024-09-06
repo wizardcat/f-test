@@ -9,7 +9,10 @@ export const useUser = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) navigate('/login');
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
     const getUserData = async () => {
       const userData = await getUser();
       setUser(userData);
@@ -19,7 +22,6 @@ export const useUser = () => {
 
   const handleLogout = () => {
     authLogout();
-    navigate('/login');
   };
 
   return {

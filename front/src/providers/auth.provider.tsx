@@ -1,6 +1,9 @@
+import { errorMessage } from '@app/common/errorMessage';
 import { User } from '@app/common/interfaces';
 import { useAuthApi } from '@app/hooks/use-auth-api.hook';
-import { createContext, ReactNode, useState } from 'react';
+import { accessTokenStore } from '@app/store/access-token.store';
+import { createContext, ReactNode, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -17,15 +20,32 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const token = accessTokenStore.getAccessToken();
+  const [isAuthenticated, setIsAuthenticated] = useState(token ? true : false);
   const { register, login, logout, getUserProfile } = useAuthApi();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/login' || location.pathname === '/register') {
+      return;
+    }
+
+    if (token) {
+      navigate('/user');
+    } else {
+      navigate('/login');
+    }
+  }, [navigate, location.pathname, token]);
 
   const registerUser = async (user: User) => {
     try {
       await register(user);
       setIsAuthenticated(true);
+      navigate('/user');
     } catch (e) {
-      throw Error('Error registering user');
+      errorMessage('Error registering user');
+      // throw Error('Error registering user');
     }
   };
 
@@ -34,15 +54,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await login(email, password);
 
       setIsAuthenticated(true);
+      navigate('/user');
     } catch (e) {
-      setIsAuthenticated(false);
-      throw e;
+      errorMessage('Error logging in');
     }
   };
 
   const authLogout = () => {
     logout();
     setIsAuthenticated(false);
+    navigate('/login');
   };
 
   const getUser = async () => {
