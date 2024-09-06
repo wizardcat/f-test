@@ -1,24 +1,24 @@
-import { useAuth } from '@app/providers/auth.provider';
-import { useEffect } from 'react';
+import { User } from '@app/common/interfaces';
+import { useAuthContext } from '@app/hooks/use-auth-context.hook';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const useUser = () => {
-  const { user, accessToken, refreshAccessToken, logout } = useAuth();
+  const [user, setUser] = useState<User>({} as User);
+  const { isAuthenticated, authLogout, getUser } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) navigate('/login');
-    console.log('dasdsadasdasd');
-    if (!accessToken) refreshAccessToken();
-    // if (!userData) {
-    //   navigate('/login');
-    // } else if (!accessToken) {
-    //   refreshAccessToken();
-    // }
-  }, [user, accessToken, refreshAccessToken, navigate]);
+    if (!isAuthenticated) navigate('/login');
+    const getUserData = async () => {
+      const userData = await getUser();
+      setUser(userData);
+    };
+    getUserData();
+  }, [isAuthenticated, navigate, getUser]);
 
   const handleLogout = () => {
-    logout();
+    authLogout();
     navigate('/login');
   };
 
