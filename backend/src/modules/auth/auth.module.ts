@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from 'src/config/jwt.config';
-import { CryptoModule } from 'src/crypto/crypto.module';
-import { UsersModule } from 'src/users/users.module';
+import { CryptoModule } from 'src/modules/crypto/crypto.module';
+import { UsersModule } from 'src/modules/users/users.module';
 import { AuthRefreshTokenService } from './auth-refresh-token.service';
 import { AuthController } from './auth.controller';
 import { authProviders } from './auth.providers';
@@ -19,9 +19,6 @@ import { LocalStrategy } from './strategies/local.strategy';
     LocalStrategy,
     JwtStrategy,
     JwtRefreshStrategy,
-
-    // UsersService,
-    // ...usersProviders,
     AuthRefreshTokenService,
     ...authProviders,
   ],
@@ -30,7 +27,6 @@ import { LocalStrategy } from './strategies/local.strategy';
     UsersModule,
     CryptoModule,
     JwtModule.registerAsync({
-      // imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: getJwtConfig,
     }),

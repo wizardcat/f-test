@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
-import { CryptoService } from 'src/crypto/crypto.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { User } from 'src/users/models/user.model';
-import { UsersService } from 'src/users/users.service';
+import { CryptoService } from 'src/modules/crypto/crypto.service';
+import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
+import { User } from 'src/modules/users/models/user.model';
+import { UsersService } from 'src/modules/users/users.service';
 import { AuthRefreshTokenService } from './auth-refresh-token.service';
 
 @Injectable()

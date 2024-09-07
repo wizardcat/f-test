@@ -12,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserLoginDto } from 'src/users/dto/user-login.dto';
-import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
+import { UserLoginDto } from 'src/modules/users/dto/user-login.dto';
+import { UsersService } from 'src/modules/users/users.service';
 import {
   cookieConfig,
   extractRefreshTokenFromCookies,

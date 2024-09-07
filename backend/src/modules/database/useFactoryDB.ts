@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Dialect } from 'sequelize';
-import { AuthRefreshToken } from 'src/auth/models/auth-refresh-token.model';
-import { User } from 'src/users/models/user.model';
+import { User } from 'src/modules/users/models/user.model';
+import { AuthRefreshToken } from '../auth/models/auth-refresh-token.model';
 import { createDatabase } from './create-database';
 
 export const useFactoryDB = async (configService: ConfigService) => {

@@ -6,7 +6,6 @@ import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { mainConfig } from './config/main.config';
-//frontendURI,
 const { apiPrefix, apiPort } = mainConfig;
 declare const module: any;
 

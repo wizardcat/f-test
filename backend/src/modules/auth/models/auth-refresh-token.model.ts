@@ -7,7 +7,7 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { User } from '../../users/models/user.model';
+import { User } from 'src/modules/users/models/user.model';
 
 @Table({ tableName: 'auth_refresh_tokens' })
 export class AuthRefreshToken extends Model<AuthRefreshToken> {

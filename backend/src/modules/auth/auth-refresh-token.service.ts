@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { constants } from 'src/common/constants';
-import { CryptoService } from 'src/crypto/crypto.service';
+import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { cookieConfig } from 'src/utils/cookies';
 import { AuthRefreshToken } from './models/auth-refresh-token.model';
 const { AUTH_PROVIDER } = constants.moduleProviders;

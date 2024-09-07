@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindOptions } from 'sequelize';
-import { CryptoService } from 'src/crypto/crypto.service';
+import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './models/user.model';
 
