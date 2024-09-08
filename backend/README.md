@@ -1,85 +1,122 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Backend for React NestJS Sequelize Authorization App
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a backend application built using NestJS with Sequelize ORM for handling database operations. It supports user authentication using JWT (JSON Web Token) and local strategies through Passport. The app provides essential security features such as CSRF protection, cookie handling, and password hashing using argon2. The application uses MySQL as the database engine.
 
-## Project setup
+Features
 
-```bash
-$ yarn install
+	•	User Authentication (JWT + Passport strategies)
+	•	Authorization using JWT for secure routes
+	•	User Registration & Login
+	•	Password hashing with Argon2
+	•	Sequelize ORM for MySQL database integration
+	•	Helmet for security headers
+	•	Swagger API Documentation integrated
+	•	Seamless error handling for authentication and token management
+	•	Code Formatting with Prettier and ESLint
+
+## Installation
+
+To get started, clone this repository and install the dependencies:
+
+```
+git clone https://github.com/your-repo/backend-react-nestjs-sequelize-authorization-app.git
+cd backend-react-nestjs-sequelize-authorization-app
+npm install
 ```
 
-## Compile and run the project
+Download MySQL image
 
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+```
+docker pull mysql
 ```
 
-## Run tests
+Start docker container
 
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+```
+docker run --name f-test-mysql -e MYSQL_ROOT_PASSWORD=<database password> -e MYSQL_DATABASE=<database name> -p 3306:3306 -d mysql:latest
 ```
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+## Environment Configuration
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Create a .env file in the root directory to configure your environment variables:
 
-## Support
+```
+API_PORT=3001
+FRONTEND_URI=http://localhost:3000
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=<database name from this docker container env: MYSQL_DATABASE>
+DB_USERNAME=root
+DB_PASSWORD=<database password from this docker container env: MYSQL_ROOT_PASSWORD>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+JWT_SECRET=jwtsecret
+JWT_REFRESH_SECRET=jwtrefreshsecret
+```
 
-## Stay in touch
+# Running the App
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Development
+
+To start the app in development mode (with hot reloading):
+
+```
+yarn start:dev
+```
+
+## Production
+
+To run the app in production mode:
+
+```
+yarn build
+yarn start:prod
+```
+## Debug Mode
+
+To run the app in debug mode:
+
+```
+yarn start:debug
+```
+
+## API Documentation
+
+API documentation is generated automatically with Swagger. Once the application is running, you can access the Swagger UI at:
+http://localhost:3001/docs
+
+Linting & Formatting
+
+To ensure the code adheres to formatting and linting standards:
+
+## Linting
+
+```
+yarn lint
+```
+
+## Formatting
+
+```
+yarn format
+```
+
+## Technologies Used
+
+	•	NestJS - A progressive Node.js framework
+	•	Sequelize - A promise-based Node.js ORM
+	•	Passport - Middleware for authentication
+	•	JWT - JSON Web Token for authorization
+	•	MySQL - Database engine
+	•	Swagger - API documentation
+	•	Argon2 - Password hashing algorithm
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is UNLICENSED.
+
+## Author
+
+Created by Roman Havrylko.

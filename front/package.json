@@ -1,7 +1,9 @@
 {
-  "name": "front",
-  "version": "0.1.0",
-  "private": true,
+  "name": "frontend-react-nestjs-sequelize-authorization-app",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Roman Havrylko",
+  "license": "UNLICENSED",
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@testing-library/jest-dom": "^5.17.0",
