@@ -11,8 +11,6 @@ interface AuthContextType {
   authLogin: (email: string, password: string) => Promise<void>;
   authLogout: () => void;
   getUser: () => Promise<any>;
-  // getUserProfile: (authFalseCallback: () => void) => Promise<any>;
-  // getUserById: (id: number, authFalseCallback: () => void) => Promise<any>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -41,11 +39,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const registerUser = async (user: User) => {
     try {
       await register(user);
+
       setIsAuthenticated(true);
-      navigate('/user');
-    } catch (e) {
-      errorMessage('Error registering user');
-      // throw Error('Error registering user');
+    } catch (e: any) {
+      if (e.response.data.message) {
+        errorMessage(e.response.data.message);
+      }
     }
   };
 
@@ -55,8 +54,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setIsAuthenticated(true);
       navigate('/user');
-    } catch (e) {
-      errorMessage('Error logging in');
+    } catch (e: any) {
+      if (e.response.data.message === 'Unauthorized') {
+        errorMessage('Wrong email or password');
+      } else {
+        errorMessage(e.response.data.message);
+      }
     }
   };
 
@@ -67,9 +70,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getUser = async () => {
-    // const user = await getUserProfile(() => {
-    //   setIsAuthenticated(false);
-    // });
     return getUserProfile(() => {
       setIsAuthenticated(false);
     });

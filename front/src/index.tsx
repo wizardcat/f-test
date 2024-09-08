@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import App from './App';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Login } from './components/Login/login.component';
 import { Register } from './components/Register/register.component';
 import { User } from './components/User/user.component.';
@@ -17,12 +18,12 @@ root.render(
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/user" element={<User />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    <ToastContainer />
   </React.StrictMode>,
 );

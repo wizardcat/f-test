@@ -41,10 +41,9 @@ export class AuthController {
   @Post('register')
   async register(
     @Body() createUserDto: CreateUserDto,
-    // @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.register(res, createUserDto);
+    return await this.authService.register(res, createUserDto);
   }
 
   @ApiBody({ type: UserLoginDto })
@@ -62,6 +61,9 @@ export class AuthController {
     @User() authUser: Express.User,
     @Res({ passthrough: true }) res: Response<UserResponse>,
   ) {
+    if (!authUser || !authUser.id) {
+      throw new InternalServerErrorException('Invalid user profile');
+    }
     res.header('Cache-Control', 'no-store');
     return this.usersService
       .getUserById(authUser.id)

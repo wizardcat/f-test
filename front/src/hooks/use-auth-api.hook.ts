@@ -17,8 +17,8 @@ export const useAuthApi = () => {
       user,
       { withCredentials: true },
     );
-    accessTokenStore.setAccessToken(data.access_token);
 
+    accessTokenStore.setAccessToken(data.access_token);
     return data;
   };
 
