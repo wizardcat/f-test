@@ -19,6 +19,7 @@ import {
   cookieConfig,
   extractRefreshTokenFromCookies,
 } from 'src/utils/cookies';
+import { UserResponse } from '../users/transformers/user.response.transformer';
 import { AuthRefreshTokenService } from './auth-refresh-token.service';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
@@ -59,10 +60,12 @@ export class AuthController {
   @UseInterceptors(ClassSerializerInterceptor)
   async profile(
     @User() authUser: Express.User,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response<UserResponse>,
   ) {
     res.header('Cache-Control', 'no-store');
-    return this.usersService.getUserById(authUser.id);
+    return this.usersService
+      .getUserById(authUser.id)
+      .then((user) => new UserResponse(user));
   }
 
   @ApiBearerAuth()

@@ -1,58 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindOptions } from 'sequelize';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './models/user.model';
 
-// const { USERS_PROVIDER } = constants.moduleProviders;
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
-    // @Inject(USERS_PROVIDER)
     @InjectModel(User)
     private readonly usersModel: typeof User,
     private cryptoService: CryptoService,
   ) {}
 
-  async addUser({ password, ...rest }: CreateUserDto) {
+  async addUser({ email, password, ...rest }: CreateUserDto) {
+    const existingUser = await this.getUserByEmail(email);
+
+    if (existingUser) {
+      throw new ConflictException(`User with email ${email} already exists.`);
+    }
+
     const hashedPassword = await this.cryptoService.generateHash(password);
 
-    return await this.usersModel
-      .create({
+    try {
+      const user = await this.usersModel.create({
         ...rest,
+        email,
         password: hashedPassword,
-      })
-      .catch((err) => {
-        console.log('user creation error: ', err);
-        throw err;
       });
+      return user;
+    } catch (err) {
+      this.logger.error('Error creating user:', err.message);
+      throw new InternalServerErrorException('Failed to create user.');
+    }
   }
 
   async getUserById(
     id: number,
     options?: FindOptions<User>,
   ): Promise<User | null> {
-    const user = await this.usersModel.findOne({
-      ...options,
-      where: {
-        ...options?.where,
-        id,
-      },
-      raw: true,
-    });
+    try {
+      const user = await this.usersModel.findOne({
+        ...options,
+        where: {
+          ...options?.where,
+          id,
+        },
+        raw: true,
+      });
 
-    return user;
+      if (!user) {
+        throw new NotFoundException(`User with id ${id} not found.`);
+      }
+
+      return user;
+    } catch (err) {
+      this.logger.error('Error fetching user by ID:', err.message);
+      throw new InternalServerErrorException('Error fetching user.');
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    const user = await this.usersModel.findOne({
-      where: {
-        email,
-      },
-      raw: true,
-    });
+    try {
+      const user = await this.usersModel.findOne({
+        where: { email },
+        raw: true,
+      });
 
-    return user;
+      return user || null;
+    } catch (err) {
+      this.logger.error('Error fetching user by email:', err.message);
+      throw new InternalServerErrorException('Error fetching user by email.');
+    }
   }
 }

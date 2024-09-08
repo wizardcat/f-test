@@ -18,10 +18,12 @@ export class CreateUserDto {
   @Length(8, 100)
   password: string;
 
+  @ApiProperty()
   @IsString()
   @IsOptional()
   name: string;
 
+  @ApiProperty()
   @IsString()
   @IsOptional()
   phone: string;

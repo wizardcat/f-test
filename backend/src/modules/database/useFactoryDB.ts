@@ -12,7 +12,7 @@ export const useFactoryDB = async (configService: ConfigService) => {
   const password = configService.get<string>('database.password');
   const database = configService.get<string>('database.database');
 
-  createDatabase({
+  await createDatabase({
     host,
     port,
     user: username,
@@ -28,7 +28,7 @@ export const useFactoryDB = async (configService: ConfigService) => {
     password,
     database,
     models: [User, AuthRefreshToken],
-    logging: configService.get('database.logging') === 'true',
+    logging: configService.get('√') === 'true',
     synchronize: process.env.NODE_ENV !== 'production',
   };
 };
