@@ -64,6 +64,7 @@ export const useAuthApi = () => {
       const executeLogic = async () => {
         const { data } = await axios.post(
           `${baseApiUri}/api/v1/auth/refresh-tokens`,
+          {},
           {
             withCredentials: true,
           },
