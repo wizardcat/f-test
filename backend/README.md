@@ -4,7 +4,7 @@
 
 This is a backend application built using NestJS with Sequelize ORM for handling database operations. It supports user authentication using JWT (JSON Web Token) and local strategies through Passport. The app provides essential security features such as CSRF protection, cookie handling, and password hashing using argon2. The application uses MySQL as the database engine.
 
-Features
+## Features
 
 	•	User Authentication (JWT + Passport strategies)
 	•	Authorization using JWT for secure routes
@@ -51,6 +51,7 @@ DB_PORT=3306
 DB_DATABASE=<database name from this docker container env: MYSQL_DATABASE>
 DB_USERNAME=root
 DB_PASSWORD=<database password from this docker container env: MYSQL_ROOT_PASSWORD>
+DB_LOGGING=true
 
 JWT_SECRET=jwtsecret
 JWT_REFRESH_SECRET=jwtrefreshsecret
