@@ -18,7 +18,7 @@ export const useUser = () => {
       setUser(userData);
     };
     getUserData();
-  }, [isAuthenticated, navigate, getUser]);
+  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     authLogout();
