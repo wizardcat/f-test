@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { DatabaseService } from './database.service';
 import { useFactoryDB } from './useFactoryDB';
 
 @Module({
@@ -12,5 +13,6 @@ import { useFactoryDB } from './useFactoryDB';
       useFactory: useFactoryDB,
     }),
   ],
+  providers: [DatabaseService],
 })
 export class DatabaseModule {}
