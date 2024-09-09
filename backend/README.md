@@ -18,12 +18,11 @@ This is a backend application built using NestJS with Sequelize ORM for handling
 
 ## Installation
 
-To get started, clone this repository and install the dependencies:
+To get started, install the dependencies:
 
 ```
-git clone https://github.com/your-repo/backend-react-nestjs-sequelize-authorization-app.git
-cd backend-react-nestjs-sequelize-authorization-app
-npm install
+cd backend
+yarn install
 ```
 
 Download MySQL image
