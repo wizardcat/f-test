@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { getJwtConfig } from 'src/config/jwt.config';
 import { CryptoModule } from 'src/modules/crypto/crypto.module';
 import { UsersModule } from 'src/modules/users/users.module';
 import { AuthRefreshTokenService } from './auth-refresh-token.service';
 import { AuthController } from './auth.controller';
-import { authProviders } from './auth.providers';
 import { AuthService } from './auth.service';
+import { AuthRefreshToken } from './models/auth-refresh-token.model';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -20,7 +21,6 @@ import { LocalStrategy } from './strategies/local.strategy';
     JwtStrategy,
     JwtRefreshStrategy,
     AuthRefreshTokenService,
-    ...authProviders,
   ],
   imports: [
     ConfigModule,
@@ -30,7 +30,8 @@ import { LocalStrategy } from './strategies/local.strategy';
       inject: [ConfigService],
       useFactory: getJwtConfig,
     }),
+    SequelizeModule.forFeature([AuthRefreshToken]),
   ],
-  exports: [AuthService],
+  exports: [AuthService, SequelizeModule.forFeature([AuthRefreshToken])],
 })
 export class AuthModule {}

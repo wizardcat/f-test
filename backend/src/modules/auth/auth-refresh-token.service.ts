@@ -1,12 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/sequelize';
 import { Response } from 'express';
-import { constants } from 'src/common/constants';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { cookieConfig } from 'src/utils/cookies';
 import { AuthRefreshToken } from './models/auth-refresh-token.model';
-const { AUTH_PROVIDER } = constants.moduleProviders;
 
 @Injectable()
 export class AuthRefreshTokenService {
@@ -14,9 +13,8 @@ export class AuthRefreshTokenService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private cryptoService: CryptoService,
-    // @InjectModel(AuthRefreshToken)
-    @Inject(AUTH_PROVIDER)
-    private authRefreshTokenRepository: typeof AuthRefreshToken,
+    @InjectModel(AuthRefreshToken)
+    private authRefreshTokenModel: typeof AuthRefreshToken,
   ) {}
 
   async generateRefreshToken(
@@ -36,7 +34,7 @@ export class AuthRefreshTokenService {
       const hashedRefreshToken =
         this.cryptoService.generateSha256HashBase64(currentRefreshToken);
 
-      await this.authRefreshTokenRepository.create({
+      await this.authRefreshTokenModel.create({
         hashedRefreshToken,
         expiresAt: currentRefreshTokenExpiresAt,
         userId: authUser.id,
@@ -50,7 +48,7 @@ export class AuthRefreshTokenService {
     hashedRefreshToken: string,
     userId: number,
   ) {
-    return this.authRefreshTokenRepository.findOne({
+    return this.authRefreshTokenModel.findOne({
       where: {
         hashedRefreshToken,
         userId,
