@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await register(user);
 
       setIsAuthenticated(true);
+      navigate('/user');
     } catch (e: any) {
       if (e.response.data.message) {
         errorMessage(e.response.data.message);
