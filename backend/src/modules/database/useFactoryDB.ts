@@ -28,7 +28,7 @@ export const useFactoryDB = async (configService: ConfigService) => {
     password,
     database,
     models: [User, AuthRefreshToken],
-    logging: configService.get('√') === 'true',
+    logging: configService.get('DB_LOGGING') === 'true',
     synchronize: process.env.NODE_ENV !== 'production',
   };
 };
