@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 import { Response } from 'express';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
+import { User } from 'src/modules/users/models/user.model';
 import { cookieConfig } from 'src/utils/cookies';
 import { AuthRefreshToken } from './models/auth-refresh-token.model';
 
@@ -15,6 +16,8 @@ export class AuthRefreshTokenService {
     private cryptoService: CryptoService,
     @InjectModel(AuthRefreshToken)
     private authRefreshTokenModel: typeof AuthRefreshToken,
+    @InjectModel(User)
+    private readonly usersModel: typeof User,
   ) {}
 
   async generateRefreshToken(
@@ -63,6 +66,16 @@ export class AuthRefreshTokenService {
     currentRefreshToken?: string,
     currentRefreshTokenExpiresAt?: Date,
   ) {
+    if (!user || !user.id) {
+      throw new InternalServerErrorException('User not found');
+    }
+
+    const isUserExists = await this.usersModel.findByPk(user.id, {});
+
+    if (!isUserExists) {
+      throw new InternalServerErrorException('User not found');
+    }
+
     const payload = { sub: user.id };
 
     res.cookie(
