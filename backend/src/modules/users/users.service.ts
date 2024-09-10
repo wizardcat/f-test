@@ -6,7 +6,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { FindOptions } from 'sequelize';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './models/user.model';
@@ -43,17 +42,9 @@ export class UsersService {
     }
   }
 
-  async getUserById(
-    id: number,
-    options?: FindOptions<User>,
-  ): Promise<User | null> {
+  async getUserById(id: number): Promise<User | null> {
     try {
-      const user = await this.usersModel.findOne({
-        ...options,
-        where: {
-          ...options?.where,
-          id,
-        },
+      const user = await this.usersModel.findByPk(id, {
         raw: true,
       });
 
