@@ -5,5 +5,5 @@ This application built using NestJS with Sequelize ORM for handling database ope
 To get started, clone this repository and follow instructions in readme.md files inside backend/front directories:
 
 ```
-git clone https://github.com/wizardcat/f-test.git
+git clone https://github.com/wizardcat/react-nestjs-sequelize-authorization-app.git
 ```
