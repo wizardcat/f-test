@@ -35,6 +35,7 @@ export class UsersService {
         email,
         password: hashedPassword,
       });
+      console.log('Created user: ', user);
       return user;
     } catch (err) {
       this.logger.error('Error creating user:', err.message);
