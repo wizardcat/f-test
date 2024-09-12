@@ -7,6 +7,7 @@ export const useUser = () => {
   const [user, setUser] = useState<User>({} as User);
   const { isAuthenticated, authLogout, getUser } = useAuthContext();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -14,7 +15,9 @@ export const useUser = () => {
       return;
     }
     const getUserData = async () => {
+      setIsLoading(true);
       const userData = await getUser();
+      setIsLoading(false);
       setUser(userData);
     };
     getUserData();
@@ -27,5 +30,6 @@ export const useUser = () => {
   return {
     user,
     handleLogout,
+    isLoading,
   };
 };

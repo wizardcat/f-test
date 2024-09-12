@@ -1,9 +1,9 @@
 import { useUser } from './use-user.hook';
 
 export const User = () => {
-  const { user, handleLogout } = useUser();
+  const { user, handleLogout, isLoading } = useUser();
 
-  if (!user) {
+  if (!user || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
