@@ -10,40 +10,6 @@ export const Register = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
         <div className="mb-2">
           <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            {...register('email')}
-            className={`h-8 mt-1 block w-full px-3 border ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-          )}
-        </div>
-
-        <div className="mb-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            {...register('password')}
-            className={`h-8 mt-1 block w-full px-3 border ${
-              errors.password ? 'border-red-500' : 'border-gray-300'
-            } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mb-2">
-          <label className="block text-sm font-medium text-gray-700">
             Name
           </label>
           <input
@@ -55,6 +21,21 @@ export const Register = () => {
           />
           {errors.name && (
             <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+          )}
+        </div>
+        <div className="mb-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            {...register('email')}
+            className={`h-8 mt-1 block w-full px-3 border ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          />
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
           )}
         </div>
 
@@ -73,7 +54,40 @@ export const Register = () => {
             <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
           )}
         </div>
-
+        <div className="mb-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <input
+            type="password"
+            {...register('password')}
+            className={`h-8 mt-1 block w-full px-3 border ${
+              errors.password ? 'border-red-500' : 'border-gray-300'
+            } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          />
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+        <div className="mb-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            {...register('confirmPassword')}
+            className={`h-8 mt-1 block w-full px-3 border ${
+              errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+            } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
         <button
           type="submit"
           className="h-8 w-full px-4 mt-3 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
