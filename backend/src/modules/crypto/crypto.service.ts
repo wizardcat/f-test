@@ -4,13 +4,14 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class CryptoService {
-  async generateHash(passport: string): Promise<string> {
-    const hashed = await hash(passport);
+  async generateHash(password: string): Promise<string> {
+    const salt = crypto.randomBytes(16);
+    const hashed = await hash(password, { salt });
     return hashed;
   }
 
-  async verifyHash(passport: string, hash: string): Promise<boolean> {
-    return verify(hash, passport);
+  async verifyHash(password: string, hash: string): Promise<boolean> {
+    return verify(hash, password);
   }
 
   generateSha256HashBase64(text: string): string {
