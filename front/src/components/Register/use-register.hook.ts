@@ -32,7 +32,8 @@ export const useRegister = () => {
   });
 
   const onSubmit = async (data: UserSchemaType) => {
-    registerUser(data);
+    const { confirmPassword, ...user } = data;
+    registerUser(user);
   };
 
   return {
