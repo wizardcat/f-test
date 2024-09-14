@@ -11,6 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { UserLoginDto } from 'src/modules/users/dto/user-login.dto';
@@ -36,6 +37,10 @@ export class AuthController {
     private authRefreshTokenService: AuthRefreshTokenService,
   ) {}
 
+  @Throttle({
+    short: { limit: 2, ttl: 1000 },
+    long: { limit: 5, ttl: 60000 },
+  })
   @Public()
   @ApiBody({ type: CreateUserDto })
   @Post('register')
@@ -46,6 +51,10 @@ export class AuthController {
     return await this.authService.register(res, createUserDto);
   }
 
+  @Throttle({
+    short: { limit: 2, ttl: 1000 },
+    long: { limit: 5, ttl: 60000 },
+  })
   @ApiBody({ type: UserLoginDto })
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -70,6 +79,10 @@ export class AuthController {
       .then((user) => new UserResponse(user));
   }
 
+  @Throttle({
+    short: { limit: 1, ttl: 1000 },
+    long: { limit: 2, ttl: 60000 },
+  })
   @ApiBearerAuth()
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
