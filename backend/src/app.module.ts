@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import databaseConfig from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -32,6 +33,7 @@ import { UsersModule } from './modules/users/users.module';
         limit: 1000,
       },
     ]),
+    ScheduleModule.forRoot(),
   ],
   providers: [
     {

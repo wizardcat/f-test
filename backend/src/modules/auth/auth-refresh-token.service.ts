@@ -1,8 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/sequelize';
 import { Response } from 'express';
+import { Op } from 'sequelize';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { User } from 'src/modules/users/models/user.model';
 import { cookieConfig } from 'src/utils/cookies';
@@ -36,7 +42,11 @@ export class AuthRefreshTokenService {
     if (currentRefreshToken && currentRefreshTokenExpiresAt) {
       const hashedRefreshToken =
         this.cryptoService.generateSha256HashBase64(currentRefreshToken);
-
+      if (
+        await this.isRefreshTokenBlackListed(hashedRefreshToken, authUser.id)
+      ) {
+        throw new UnauthorizedException('Invalid refresh token.');
+      }
       await this.authRefreshTokenModel.create({
         hashedRefreshToken,
         expiresAt: currentRefreshTokenExpiresAt,
@@ -93,5 +103,16 @@ export class AuthRefreshTokenService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  async clearExpiredRefreshTokens() {
+    await this.authRefreshTokenModel.destroy({
+      where: {
+        expiresAt: {
+          [Op.lte]: new Date(),
+        },
+      },
+    });
   }
 }
