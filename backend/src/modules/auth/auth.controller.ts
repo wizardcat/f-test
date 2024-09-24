@@ -48,7 +48,14 @@ export class AuthController {
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return await this.authService.register(res, createUserDto);
+    const { accessToken, refreshToken } =
+      await this.authService.register(createUserDto);
+
+    res.cookie(cookieConfig.refreshToken.name, refreshToken, {
+      ...cookieConfig.refreshToken.options,
+    });
+
+    return { accessToken };
   }
 
   @Throttle({
@@ -59,8 +66,16 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return this.authService.login(res, req.user);
+  async login(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const { accessToken, refreshToken } = await this.authService.login(
+      req.user,
+    );
+
+    res.cookie(cookieConfig.refreshToken.name, refreshToken, {
+      ...cookieConfig.refreshToken.options,
+    });
+
+    return { accessToken };
   }
 
   @ApiBearerAuth()
@@ -87,7 +102,7 @@ export class AuthController {
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh-tokens')
-  refreshTokens(
+  async refreshTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -99,11 +114,17 @@ export class AuthController {
 
     const currentRefreshToken = extractRefreshTokenFromCookies(req);
 
-    return this.authRefreshTokenService.generateTokenPair(
-      user,
-      res,
-      currentRefreshToken,
-    );
+    const { accessToken, refreshToken } =
+      await this.authRefreshTokenService.generateTokenPair(
+        user,
+        currentRefreshToken,
+      );
+
+    res.cookie(cookieConfig.refreshToken.name, refreshToken, {
+      ...cookieConfig.refreshToken.options,
+    });
+
+    return { accessToken };
   }
 
   @Public()

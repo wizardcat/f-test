@@ -1,5 +1,4 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Response } from 'express';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { User } from 'src/modules/users/models/user.model';
@@ -14,22 +13,22 @@ export class AuthService {
     private readonly authRefreshTokenService: AuthRefreshTokenService,
   ) {}
 
-  async register(res: Response, user?: CreateUserDto) {
-    if (!user?.email || !user?.password) {
+  async register(user: CreateUserDto) {
+    if (!user.email || !user.password) {
       throw new InternalServerErrorException(
         'User credentials not set in request',
       );
     }
     const newUser = await this.usersService.addUser(user);
 
-    return this.authRefreshTokenService.generateTokenPair(newUser, res);
+    return this.authRefreshTokenService.generateTokenPair(newUser);
   }
 
-  async login(res: Response, user?: Express.User) {
-    if (!user?.id) {
+  async login(user: Express.User) {
+    if (!user.id) {
       throw new InternalServerErrorException('User not set in request');
     }
-    return this.authRefreshTokenService.generateTokenPair(user, res);
+    return this.authRefreshTokenService.generateTokenPair(user);
   }
 
   async validateUser(email: string, password: string): Promise<User | null> {

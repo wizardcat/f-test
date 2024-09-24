@@ -7,11 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/sequelize';
-import { Response } from 'express';
 import { Op } from 'sequelize';
 import { CryptoService } from 'src/modules/crypto/crypto.service';
 import { User } from 'src/modules/users/models/user.model';
-import { cookieConfig } from 'src/utils/cookies';
 import { AuthRefreshToken } from './models/auth-refresh-token.model';
 
 @Injectable()
@@ -42,9 +40,13 @@ export class AuthRefreshTokenService {
     if (currentRefreshToken && currentRefreshTokenExpiresAt) {
       const hashedRefreshToken =
         this.cryptoService.generateSha256HashBase64(currentRefreshToken);
-      if (
-        await this.isRefreshTokenBlackListed(hashedRefreshToken, authUser.id)
-      ) {
+
+      const isRefreshTokenInBlackList = await this.isRefreshTokenBlackListed(
+        hashedRefreshToken,
+        authUser.id,
+      );
+
+      if (isRefreshTokenInBlackList) {
         throw new UnauthorizedException('Invalid refresh token.');
       }
       await this.authRefreshTokenModel.create({
@@ -57,24 +59,7 @@ export class AuthRefreshTokenService {
     return newRefreshToken;
   }
 
-  private isRefreshTokenBlackListed(
-    hashedRefreshToken: string,
-    userId: number,
-  ) {
-    return this.authRefreshTokenModel.findOne({
-      where: {
-        hashedRefreshToken,
-        userId,
-      },
-      raw: true,
-    });
-  }
-
-  async generateTokenPair(
-    user: Express.User,
-    res: Response,
-    currentRefreshToken?: string,
-  ) {
+  async generateTokenPair(user: Express.User, currentRefreshToken?: string) {
     if (!user || !user.id) {
       throw new InternalServerErrorException('User not found');
     }
@@ -88,21 +73,31 @@ export class AuthRefreshTokenService {
     const payload = { sub: user.id };
     const currentRefreshTokenExpiresAt = user.refreshTokenExpiresAt;
 
-    res.cookie(
-      cookieConfig.refreshToken.name,
-      await this.generateRefreshToken(
-        user,
-        currentRefreshToken,
-        currentRefreshTokenExpiresAt,
-      ),
-      {
-        ...cookieConfig.refreshToken.options,
-      },
+    const refreshToken = await this.generateRefreshToken(
+      user,
+      currentRefreshToken,
+      currentRefreshTokenExpiresAt,
     );
 
+    const accessToken = this.jwtService.sign(payload);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
     };
+  }
+
+  private isRefreshTokenBlackListed(
+    hashedRefreshToken: string,
+    userId: number,
+  ) {
+    return this.authRefreshTokenModel.findOne({
+      where: {
+        hashedRefreshToken,
+        userId,
+      },
+      raw: true,
+    });
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)

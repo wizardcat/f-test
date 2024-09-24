@@ -18,7 +18,7 @@ export const useAuthApi = () => {
       { withCredentials: true },
     );
 
-    accessTokenStore.setAccessToken(data.access_token);
+    accessTokenStore.setAccessToken(data.accessToken);
     return data;
   };
 
@@ -31,7 +31,7 @@ export const useAuthApi = () => {
       },
       { withCredentials: true },
     );
-    accessTokenStore.setAccessToken(data.access_token);
+    accessTokenStore.setAccessToken(data.accessToken);
 
     return data;
   };
@@ -70,7 +70,7 @@ export const useAuthApi = () => {
           },
         );
 
-        accessTokenStore.setAccessToken(data.access_token);
+        accessTokenStore.setAccessToken(data.accessToken);
       };
 
       executeLogic().then(debouncedResolve).catch(debouncedReject);
