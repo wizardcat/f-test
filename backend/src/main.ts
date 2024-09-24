@@ -6,8 +6,11 @@ import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { mainConfig } from './config/main.config';
+
+declare const module: NodeModule & {
+  hot?: { accept: () => void; dispose: (callback: () => void) => void };
+};
 const { apiPrefix, apiPort } = mainConfig;
-declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
