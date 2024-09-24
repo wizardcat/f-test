@@ -91,15 +91,18 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (!req.user) {
+    const { user } = req;
+
+    if (!user) {
       throw new InternalServerErrorException();
     }
 
+    const currentRefreshToken = extractRefreshTokenFromCookies(req);
+
     return this.authRefreshTokenService.generateTokenPair(
-      (req.user as any).attributes,
+      user,
       res,
-      extractRefreshTokenFromCookies(req) as string,
-      (req.user as any).refreshTokenExpiresAt,
+      currentRefreshToken,
     );
   }
 

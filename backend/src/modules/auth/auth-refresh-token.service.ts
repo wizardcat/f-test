@@ -74,7 +74,6 @@ export class AuthRefreshTokenService {
     user: Express.User,
     res: Response,
     currentRefreshToken?: string,
-    currentRefreshTokenExpiresAt?: Date,
   ) {
     if (!user || !user.id) {
       throw new InternalServerErrorException('User not found');
@@ -87,6 +86,7 @@ export class AuthRefreshTokenService {
     }
 
     const payload = { sub: user.id };
+    const currentRefreshTokenExpiresAt = user.refreshTokenExpiresAt;
 
     res.cookie(
       cookieConfig.refreshToken.name,

@@ -5,6 +5,13 @@ import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { extractRefreshTokenFromCookies } from 'src/utils/cookies';
 
+interface JwtRefreshPayload {
+  sub: number;
+  exp: number;
+  iat?: number;
+  [key: string]: any;
+}
+
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
@@ -20,12 +27,12 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: JwtRefreshPayload) {
     if (!payload.sub) {
       throw new UnauthorizedException('Invalid refresh jwt payload.');
     }
     return {
-      attributes: { id: payload.sub },
+      id: payload.sub,
       refreshTokenExpiresAt: new Date(payload.exp * 1000),
     };
   }
