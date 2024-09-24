@@ -3,10 +3,18 @@ import { useUser } from './use-user.hook';
 export const User = () => {
   const { user, handleLogout, isLoading } = useUser();
 
-  if (!user || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>You are not logged in</p>
       </div>
     );
   }

@@ -10,7 +10,7 @@ interface AuthContextType {
   registerUser: (user: User) => Promise<void>;
   authLogin: (email: string, password: string) => Promise<void>;
   authLogout: () => void;
-  getUser: () => Promise<any>;
+  getUser: () => Promise<User | undefined>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const useUser = () => {
-  const [user, setUser] = useState<User>({} as User);
+  const [user, setUser] = useState<User | undefined>(undefined);
   const { isAuthenticated, authLogout, getUser } = useAuthContext();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
