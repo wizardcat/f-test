@@ -13,7 +13,17 @@ export const wrongCredentials = {
   password: 'wrongpassword',
 };
 
+export const mockTokens = {
+  accessToken: 'access_token',
+  refreshToken: 'refresh_token',
+};
+
 export const mockCreateUserDto: CreateUserDto = {
   ...mockUser,
   password: 'password',
+};
+
+export const mockRequest = {
+  user: { id: 1 },
+  headers: { cookie: 'refreshToken=old_refresh_token' },
 };
