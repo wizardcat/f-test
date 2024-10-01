@@ -5,6 +5,7 @@ export const mockUser = {
   name: 'John Silver',
   email: 'john@example.com',
   phone: '1234567890',
+  password: 'hashedPassword',
 };
 
 export const mockCreateUserDto: CreateUserDto = {
