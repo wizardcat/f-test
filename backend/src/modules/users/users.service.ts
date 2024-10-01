@@ -24,7 +24,7 @@ export class UsersService {
     const existingUser = await this.getUserByEmail(email);
 
     if (existingUser) {
-      throw new ConflictException(`User with email ${email} already exists.`);
+      throw new ConflictException(`User with email ${email} already exists`);
     }
 
     const hashedPassword = await this.cryptoService.generateHash(password);
@@ -39,7 +39,7 @@ export class UsersService {
       return user;
     } catch (err) {
       this.logger.error('Error creating user:', err.message);
-      throw new InternalServerErrorException('Failed to create user.');
+      throw new InternalServerErrorException('Failed to create user');
     }
   }
 
@@ -50,13 +50,13 @@ export class UsersService {
       });
 
       if (!user) {
-        throw new NotFoundException(`User with id ${id} not found.`);
+        throw new NotFoundException(`User with id ${id} not found`);
       }
 
       return user;
     } catch (err) {
       this.logger.error('Error fetching user by ID:', err.message);
-      throw new InternalServerErrorException('Error fetching user.');
+      throw new InternalServerErrorException('Error fetching user');
     }
   }
 
@@ -70,7 +70,7 @@ export class UsersService {
       return user || null;
     } catch (err) {
       this.logger.error('Error fetching user by email:', err.message);
-      throw new InternalServerErrorException('Error fetching user by email.');
+      throw new InternalServerErrorException('Error fetching user by email');
     }
   }
 }
