@@ -8,6 +8,11 @@ export const mockUser = {
   password: 'hashedPassword',
 };
 
+export const wrongCredentials = {
+  email: 'wrong@example.com',
+  password: 'wrongpassword',
+};
+
 export const mockCreateUserDto: CreateUserDto = {
   ...mockUser,
   password: 'password',
